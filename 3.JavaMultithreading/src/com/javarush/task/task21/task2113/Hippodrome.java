@@ -18,7 +18,7 @@ public class Hippodrome {
 
     public static void main(String[] args) throws InterruptedException {
         game = new Hippodrome(new ArrayList<>());
-        Horse horse1 = new Horse("Marusya", 3, 0);
+        Horse horse1 = new Horse("\uD83D\uDC0E", 3, 0);
         Horse horse2 = new Horse("Borya", 3, 0);
         Horse horse3 = new Horse("Zorka", 3, 0);
 
