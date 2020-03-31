@@ -95,7 +95,7 @@ public class Room {
     /**
      * Выводим на экран текущее состояние игры
      */
-    public void print() {
+    /*public void print() {
         //Создаем массив, куда будем "рисовать" текущее состояние игры
         int[][] matrix = new int[height][width];
 
@@ -122,6 +122,13 @@ public class Room {
         System.out.println();
         System.out.println();
         System.out.println();
+    }*/
+
+    public void print() {
+        if (KeyboardObserver.frame != null) {
+            KeyboardObserver.frame.setContentPane(new Layer());
+            KeyboardObserver.frame.setVisible(true);
+        }
     }
 
     /**

@@ -12,7 +12,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class KeyboardObserver extends Thread {
     private Queue<KeyEvent> keyEvents = new ArrayBlockingQueue<KeyEvent>(100);
 
-    private JFrame frame;
+    static JFrame frame;
 
     @Override
     public void run() {
@@ -20,13 +20,17 @@ public class KeyboardObserver extends Thread {
         frame.setTitle("Transparent JFrame Demo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frame.setUndecorated(true);
-        frame.setSize(400, 400);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //чтобы у окна появилась рамка
+        frame.setUndecorated(false);
+        //задаем новые размеры окна
+        frame.setSize((Room.game.getWidth() * 10) + 17, (Room.game.getHeight() * 10) + 40);
+        //убираем разворот окна
+        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(new GridBagLayout());
-
-        frame.setOpacity(0.0f);
-        frame.setVisible(true);
+        //убираем прозрачность
+        //frame.setOpacity(0.0f);
+        //отобразим окно в другом месте;
+        //frame.setVisible(true);
 
         frame.addFocusListener(new FocusListener() {
             @Override
