@@ -11,7 +11,6 @@ public class MainModel implements Model {
 
     private ModelData modelData = new ModelData();
     private UserService userService = new UserServiceImpl();
-    private UserDao userDao = new UserDao();
 
     @Override
     public ModelData getModelData() {
@@ -42,9 +41,12 @@ public class MainModel implements Model {
     @Override
     public void deleteUserById(long id) {
         userService.deleteUser(id);
+        modelData.setUsers(getAllUsers());
     }
 
     private List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        List<User> users =  userService.getUsersBetweenLevels(1, 100);
+        List<User> usersActive = userService.filterOnlyActiveUsers(users);
+        return usersActive;
     }
 }
