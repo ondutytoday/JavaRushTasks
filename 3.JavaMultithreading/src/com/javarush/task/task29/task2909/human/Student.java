@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Student extends Human {
+public class Student extends UniversityPerson {
     private double averageGrade;
-    private String university;
     private Date beginningOfSession;
     private Date endOfSession;
+    private int course;
 
     public Student(String name, int age, double averageGrade) {
         super(name, age);
@@ -22,16 +22,12 @@ public class Student extends Human {
     public void learn() {
     }
 
-    public String getUniversity() {
-        return university;
+    public int getCourse() {
+        return course;
     }
 
-    public void setUniversity(String university) {
-        this.university = university;
-    }
-
-    public void printData() {
-        System.out.println("Студент: " + name);
+    public void setCourse(int course) {
+        this.course = course;
     }
 
     public void incAverageGradeBy01() {
@@ -42,16 +38,16 @@ public class Student extends Human {
         averageGrade += 0.2;
     }
 
-    public void setValue(String name, double value) {
+    /*public void setValue(String name, double value) {
         if (name.equals("averageGrade")) {
-            averageGrade = value;
+            setAverageGrade(value);
             return;
         }
         if (name.equals("course")) {
-            course = (int) value;
+            setCourse((int) value);
             return;
         }
-    }
+    }*/
 
     public void setBeginningOfSession(int day, int month, int year) {
         beginningOfSession = new Date(year, month, day);
@@ -63,5 +59,14 @@ public class Student extends Human {
 
     public double getAverageGrade() {
         return averageGrade;
+    }
+
+    public void setAverageGrade(double averageGrade) {
+        this.averageGrade = averageGrade;
+    }
+
+    @Override
+    public String getPosition() {
+        return "Студент";
     }
 }
