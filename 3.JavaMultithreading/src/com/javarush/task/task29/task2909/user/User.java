@@ -17,6 +17,18 @@ public class User {
         this.age = age;
     }
 
+    public void printInfo() {
+        System.out.println("Имя: " + this.name);
+        System.out.println("Фамилия: " + this.surname);
+    }
+
+    public void printAdditionalInfo() {
+        if (age < 16)
+            System.out.println("Пользователь моложе 16 лет");
+        else
+            System.out.println("Пользователь старше 16 лет");
+    }
+
     public String getName() {
         return name;
     }
@@ -68,4 +80,5 @@ public class User {
     public void setWork(Work work) {
         this.work = work;
     }
+
 }

@@ -21,8 +21,8 @@ public class University {
         return students
                 .stream()
                 .filter(student -> averageGrade == student.getAverageGrade())
-                .findAny()
-                .get();
+                .findFirst()
+                .orElse(null);
 
     }
 
