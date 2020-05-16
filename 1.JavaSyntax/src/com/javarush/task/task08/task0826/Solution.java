@@ -3,7 +3,9 @@ package com.javarush.task.task08.task0826;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import org.apache.commons.lang3.ArrayUtils;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 /* 
 Пять победителей
@@ -29,6 +31,7 @@ public class Solution {
     public static void sort(int[] array) {
         //напишите тут ваш код
         Arrays.sort(array);
-        ArrayUtils.reverse(array);
+        Collections.reverse(Arrays.asList(array));
+
     }
 }

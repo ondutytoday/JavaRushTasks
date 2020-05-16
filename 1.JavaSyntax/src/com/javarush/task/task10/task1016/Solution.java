@@ -30,14 +30,14 @@ public class Solution {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
         //напишите тут ваш код
         //мой вариант
-        for (String s : list) {
+        /*for (String s : list) {
             if (result.containsKey(s)) {
                 result.put(s, (result.getOrDefault().get(s) + 1));
             } else {
                 result.put(s, 1);
             }
 
-        }
+        }*/
         //вариант с merge
 
         list.forEach(s -> result.merge(s, 1, (a, b) -> a + b));
