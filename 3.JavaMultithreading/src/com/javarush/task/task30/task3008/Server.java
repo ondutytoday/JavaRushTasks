@@ -84,5 +84,19 @@ public class Server {
             }
             return clientName.getData();
         }
+
+        private void notifyUsers (Connection connection, String userName) throws IOException {
+            connectionMap
+                    .forEach((k, v) -> {
+                        if (!k.equals(userName)) {
+                            try {
+                                connection.send(new Message(MessageType.USER_ADDED, k));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+        }
     }
 }
