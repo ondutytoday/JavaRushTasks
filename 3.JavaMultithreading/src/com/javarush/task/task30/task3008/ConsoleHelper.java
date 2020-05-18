@@ -25,7 +25,6 @@ public class ConsoleHelper {
     }
 
     public static int readInt() {
-        boolean isRead = false;
         Integer n = null;
         while (n == null) {
             try {

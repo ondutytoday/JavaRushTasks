@@ -12,8 +12,6 @@ public class Connection implements Closeable {
     private final ObjectOutputStream out;
     private final ObjectInputStream in;
 
-    private Message message;
-
     public Connection(Socket socket) throws IOException {
         this.socket = socket;
         //out должен быть создан раньше чем in чтобы избежать блокировки потоков
