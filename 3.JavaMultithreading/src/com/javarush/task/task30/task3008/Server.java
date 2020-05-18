@@ -13,10 +13,10 @@ public class Server {
     public static void main(String[] args) {
         System.out.println("Enter number of port:");
         int port = ConsoleHelper.readInt();
-        try (ServerSocket serverSocket = new ServerSocket(port)){
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server started.");
             while (true) {
-                try (Socket clientSocket = serverSocket.accept()){
+                try (Socket clientSocket = serverSocket.accept()) {
                     Handler handler = new Handler(clientSocket);
                     handler.start();
                 } catch (IOException e) {
@@ -62,7 +62,31 @@ public class Server {
             this.socket = socket;
         }
 
-        private String serverHandshake (Connection connection) throws IOException, ClassNotFoundException{
+        @Override
+        public void run() {
+            String userName = null;
+            ConsoleHelper.writeMessage("Connection successful " + socket.getRemoteSocketAddress());
+            try ( Connection connection = new Connection(socket);){
+                userName = serverHandshake(connection);
+                sendBroadcastMessage(new Message(MessageType.USER_ADDED, userName));
+                notifyUsers(connection, userName);
+                serverMainLoop(connection, userName);
+            } catch (IOException e) {
+                ConsoleHelper.writeMessage("An error occurred while exchanging data with the remote address" + e.getMessage());
+               // e.printStackTrace();
+            } catch (ClassNotFoundException cl) {
+                ConsoleHelper.writeMessage("An error occurred while exchanging data with the remote address" + cl.getMessage());
+                // cl.printStackTrace();
+            } finally {
+                if (userName != null){
+                    connectionMap.remove(userName);
+                    sendBroadcastMessage(new Message(MessageType.USER_REMOVED,userName));
+                }
+            }
+
+        }
+
+        private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
             Message clientName = null;
             boolean isCorrectName = false;
             while (!isCorrectName) {
@@ -70,7 +94,7 @@ public class Server {
                 ConsoleHelper.writeMessage("Please enter your name:");
                 clientName = connection.receive();
                 if (clientName.getType().equals(MessageType.USER_NAME)) {
-                    if (clientName.getData().equals("") || clientName.getData() == null) continue;
+                    if (clientName.getData().equals("")) continue;
                     if (connectionMap.containsKey(clientName.getData())) {
                         ConsoleHelper.writeMessage("Failed to register. Username already exists.");
                     } else {
@@ -84,7 +108,7 @@ public class Server {
             return clientName.getData();
         }
 
-        private void notifyUsers (Connection connection, String userName) throws IOException {
+        private void notifyUsers(Connection connection, String userName) throws IOException {
             connectionMap
                     .forEach((k, v) -> {
                         if (!k.equals(userName)) {
