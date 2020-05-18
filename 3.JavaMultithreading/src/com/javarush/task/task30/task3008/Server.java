@@ -11,10 +11,10 @@ public class Server {
     private static Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
-        System.out.println("Введите номер порта сервера:");
+        System.out.println("Enter number of port:");
         int port = ConsoleHelper.readInt();
         try (ServerSocket serverSocket = new ServerSocket(port)){
-            System.out.println("Сервер запущен.");
+            System.out.println("Server started.");
             while (true) {
                 try (Socket clientSocket = serverSocket.accept()){
                     Handler handler = new Handler(clientSocket);
@@ -36,7 +36,7 @@ public class Server {
                         connection.send(message);
                     } catch (IOException e) {
                         try {
-                            connection.send(new Message(MessageType.TEXT, "Сообщение не отправлено.\n" + e.getMessage()));
+                            connection.send(new Message(MessageType.TEXT, "Error\n" + e.getMessage()));
                         } catch (IOException ioException) {
                             ioException.printStackTrace();
                         }
@@ -73,7 +73,6 @@ public class Server {
                     if (clientName.getData().equals("") || clientName.getData() == null) continue;
                     if (connectionMap.containsKey(clientName.getData())) {
                         ConsoleHelper.writeMessage("Failed to register. Username already exists.");
-                        continue;
                     } else {
                         connectionMap.put(clientName.getData(), connection);
                         connection.send(new Message(MessageType.NAME_ACCEPTED));
@@ -97,6 +96,17 @@ public class Server {
                         }
                     });
 
+        }
+
+        private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException {
+            while (true) {
+                Message msg = connection.receive();
+                if (MessageType.TEXT.equals(msg.getType())) {
+                    sendBroadcastMessage(new Message(MessageType.TEXT, userName + ": " + msg.getData()));
+                } else {
+                    ConsoleHelper.writeMessage("Error");
+                }
+            }
         }
     }
 }
