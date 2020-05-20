@@ -84,6 +84,51 @@ public class Client {
 
     public class SocketThread extends Thread {
 
+        protected void clientHandshake() throws IOException, ClassNotFoundException {
+            Message message = null;
+            boolean isAccepted = false;
+            while (!isAccepted) {
+                message = connection.receive();
+                if (message.getType() != null) {
+                    switch (message.getType()) {
+                        case NAME_REQUEST:
+                            connection.send(new Message(MessageType.USER_NAME, getUserName()));
+                            break;
+                        case NAME_ACCEPTED:
+                            notifyConnectionStatusChanged(true);
+                            isAccepted = true;
+                            break;
+                        default: throw new IOException("Unexpected MessageType");
+                    }
+                } else {
+                    throw new IOException("Unexpected MessageType");
+                }
+
+            }
+        }
+
+        protected void clientMainLoop () throws IOException, ClassNotFoundException {
+            while (true) {
+                Message message = connection.receive();
+                if (message.getType() != null) {
+                    switch (message.getType()) {
+                        case TEXT:
+                            processIncomingMessage(message.getData());
+                            break;
+                        case USER_ADDED:
+                            informAboutAddingNewUser(message.getData());
+                            break;
+                        case USER_REMOVED:
+                            informAboutDeletingNewUser(message.getData());
+                            break;
+                        default: throw new IOException("Unexpected MessageType");
+                    }
+                } else {
+                    throw new IOException("Unexpected MessageType");
+                }
+            }
+        }
+
         protected void processIncomingMessage(String message) {
             ConsoleHelper.writeMessage(message);
         }
