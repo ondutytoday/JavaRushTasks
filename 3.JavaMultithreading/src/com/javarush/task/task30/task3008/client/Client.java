@@ -86,8 +86,7 @@ public class Client {
 
         protected void clientHandshake() throws IOException, ClassNotFoundException {
             Message message = null;
-            boolean isAccepted = false;
-            while (!isAccepted) {
+            while (Client.this.clientConnected) {
                 message = connection.receive();
                 if (message.getType() != null) {
                     switch (message.getType()) {
@@ -96,7 +95,6 @@ public class Client {
                             break;
                         case NAME_ACCEPTED:
                             notifyConnectionStatusChanged(true);
-                            isAccepted = true;
                             break;
                         default: throw new IOException("Unexpected MessageType");
                     }
