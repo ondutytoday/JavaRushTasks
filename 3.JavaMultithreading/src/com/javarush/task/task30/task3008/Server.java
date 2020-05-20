@@ -141,10 +141,13 @@ public class Server {
             while (true) {
                 Message msg = connection.receive();
                 if (MessageType.TEXT.equals(msg.getType())) {
+                    //нормально завершет по выходу
+                   // if (msg.getData().equals("exit")) break;
                     sendBroadcastMessage(new Message(MessageType.TEXT, userName + ": " + msg.getData()));
                 } else {
                     ConsoleHelper.writeMessage("Error");
                 }
+
             }
         }
     }
