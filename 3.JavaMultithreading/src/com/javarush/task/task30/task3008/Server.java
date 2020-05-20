@@ -13,18 +13,30 @@ public class Server {
     public static void main(String[] args) {
         ConsoleHelper.writeMessage("Enter number of port:");
         int port = ConsoleHelper.readInt();
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        ServerSocket serverSocket = null;
+        Socket clientSocket = null;
+        try {
+            serverSocket = new ServerSocket(port);
             System.out.println("Server started.");
             while (true) {
-                try (Socket clientSocket = serverSocket.accept()) {
+                try {
+                    clientSocket = serverSocket.accept();
                     Handler handler = new Handler(clientSocket);
                     handler.start();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    System.out.println("error with handler");
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (serverSocket != null) serverSocket.close();
+                if (clientSocket !=null) clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -66,21 +78,25 @@ public class Server {
         public void run() {
             String userName = null;
             ConsoleHelper.writeMessage("Connection successful " + socket.getRemoteSocketAddress());
-            try ( Connection connection = new Connection(socket);){
+            Connection connection = null;
+            try {
+                connection = new Connection(socket);
                 userName = serverHandshake(connection);
                 sendBroadcastMessage(new Message(MessageType.USER_ADDED, userName));
                 notifyUsers(connection, userName);
                 serverMainLoop(connection, userName);
-            } catch (IOException e) {
-                ConsoleHelper.writeMessage("An error occurred while exchanging data with the remote address" + e.getMessage());
-               // e.printStackTrace();
-            } catch (ClassNotFoundException cl) {
-                ConsoleHelper.writeMessage("An error occurred while exchanging data with the remote address" + cl.getMessage());
-                // cl.printStackTrace();
+            } catch (IOException | ClassNotFoundException e) {
+                ConsoleHelper.writeMessage("An error occurred while exchanging data with the remote address " + e.getMessage());
+                try {
+                    connection.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+                e.printStackTrace();
             } finally {
-                if (userName != null){
+                if (userName != null) {
                     connectionMap.remove(userName);
-                    sendBroadcastMessage(new Message(MessageType.USER_REMOVED,userName));
+                    sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
                 }
             }
 
@@ -90,8 +106,7 @@ public class Server {
             Message clientName = null;
             boolean isCorrectName = false;
             while (!isCorrectName) {
-                connection.send(new Message(MessageType.NAME_REQUEST));
-                ConsoleHelper.writeMessage("Please enter your name:");
+                connection.send(new Message(MessageType.NAME_REQUEST, "Please enter your name:"));
                 clientName = connection.receive();
                 if (clientName.getType().equals(MessageType.USER_NAME)) {
                     if (clientName.getData().equals("")) continue;

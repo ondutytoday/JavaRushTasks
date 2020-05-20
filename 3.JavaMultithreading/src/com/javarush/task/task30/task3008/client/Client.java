@@ -44,7 +44,7 @@ public class Client {
 
     protected String getServerAddress() {
         String address = "";
-        ConsoleHelper.writeMessage("Enter server-address (ip or localhost:");
+        ConsoleHelper.writeMessage("Enter server-address (ip or localhost):");
         /*do {
             address = ConsoleHelper.readString();
         } while (!address.equals("localhost") || !address.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"));*/
@@ -102,7 +102,8 @@ public class Client {
 
         protected void clientHandshake() throws IOException, ClassNotFoundException {
             Message message = null;
-            while (Client.this.clientConnected) {
+
+            while (!Client.this.clientConnected) {
                 message = connection.receive();
                 if (message.getType() != null) {
                     switch (message.getType()) {
