@@ -19,11 +19,11 @@ public class ZipFileManager {
              InputStream inputStream = Files.newInputStream(source);) {
             ZipEntry zipEntry = new ZipEntry(source.getFileName().toString());
             outputStream.putNextEntry(zipEntry);
-           // while (inputStream.available() > 0) {
+            while (inputStream.available() > 0) {
                 byte [] buffer = new byte[inputStream.available()];
                 inputStream.read(buffer);
                 outputStream.write(buffer);
-        //    }
+            }
 
             outputStream.closeEntry();
         } catch (IOException e) {
