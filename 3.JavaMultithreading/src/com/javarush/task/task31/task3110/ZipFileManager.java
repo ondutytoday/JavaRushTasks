@@ -58,9 +58,7 @@ public class ZipFileManager {
 
     public void extractAll(Path outputFolder) throws Exception {
         // Проверяем существует ли zip файл
-        if (!Files.isRegularFile(zipFile)) {
-            throw new WrongZipFileException();
-        }
+        isZipFileExist();
 
         try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile))) {
             // Создаем директорию вывода, если она не существует
@@ -87,40 +85,112 @@ public class ZipFileManager {
         }
     }
 
-    public void removeFiles(List<Path> pathList) throws Exception {
-        // Проверяем существует ли zip файл
-        if (!Files.isRegularFile(zipFile)) {
-            throw new WrongZipFileException();
-        }
-        Path tempFile = Files.createTempFile("zipFile", "");
-        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile));
-             ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(tempFile))) {
-            // Проходимся по содержимому zip потока (файла)
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            while (zipEntry != null) {
-                if (pathList.contains(Paths.get(zipEntry.getName()))) {
-                    ConsoleHelper.writeMessage("Файл " + zipEntry.getName() + " удалён.");
-                } else {
-                    zipOutputStream.putNextEntry(zipEntry);
-                    copyData(zipInputStream, zipOutputStream);
-                    zipInputStream.closeEntry();
-                    zipOutputStream.closeEntry();
-                }
-                zipEntry = zipInputStream.getNextEntry();
-            }
-        }
-        Files.move(tempFile, zipFile, StandardCopyOption.REPLACE_EXISTING);
-    }
-
     public void removeFile(Path path) throws Exception {
         removeFiles(Collections.singletonList(path));
     }
 
-    public List<FileProperties> getFilesList() throws Exception {
+    public void removeFiles(List<Path> pathList) throws Exception {
+        // Проверяем существует ли zip файл
+        isZipFileExist();
+
+        // Создаем временный файл
+        Path tempZipFile = Files.createTempFile(null, null);
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(tempZipFile))) {
+            try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile))) {
+
+                ZipEntry zipEntry = zipInputStream.getNextEntry();
+                while (zipEntry != null) {
+
+                    Path archivedFile = Paths.get(zipEntry.getName());
+
+                    if (!pathList.contains(archivedFile)) {
+                        String fileName = zipEntry.getName();
+                        zipOutputStream.putNextEntry(new ZipEntry(fileName));
+
+                        copyData(zipInputStream, zipOutputStream);
+
+                        zipOutputStream.closeEntry();
+                        zipInputStream.closeEntry();
+                    } else {
+                        ConsoleHelper.writeMessage(String.format("Файл '%s' удален из архива.", archivedFile.toString()));
+                    }
+                    zipEntry = zipInputStream.getNextEntry();
+                }
+            }
+        }
+
+        // Перемещаем временный файл на место оригинального
+        Files.move(tempZipFile, zipFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void addFiles(List<Path> absolutePathList) throws Exception {
+        isZipFileExist();
+
+        // Создаем временный файл
+        Path tempZipFile = Files.createTempFile(null, null);
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(tempZipFile))) {
+            try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile))) {
+
+                ZipEntry zipEntry = zipInputStream.getNextEntry();
+                List <String> tempfileNames = new ArrayList<>();
+                while (zipEntry != null) {
+                    String fileName = zipEntry.getName();
+                    tempfileNames.add(fileName);
+                    zipOutputStream.putNextEntry(new ZipEntry(fileName));
+
+                    copyData(zipInputStream, zipOutputStream);
+
+                    zipOutputStream.closeEntry();
+                    zipInputStream.closeEntry();
+
+                    zipEntry = zipInputStream.getNextEntry();
+                }
+                for (Path path :  absolutePathList) {
+                    if (!Files.exists(path) || !Files.isRegularFile(path)) {
+                        throw new PathIsNotFoundException();
+                    }
+                    if (tempfileNames.contains(path.getFileName().toString())) {
+                        ConsoleHelper.writeMessage("файл " + path.getFileName().toString() + " уже существует.");
+                    } else {
+                        if (Files.isDirectory(path)) {
+                            // Если архивируем директорию, то нужно получить список файлов в ней
+                            FileManager fileManager = new FileManager(path);
+                            List<Path> fileNames = fileManager.getFileList();
+
+                            // Добавляем каждый файл в архив
+                            for (Path fileName : fileNames) {
+                                addNewZipEntry(zipOutputStream, path.getParent(), fileName);
+                                ConsoleHelper.writeMessage("файл " + path.getFileName().toString() + " успешно добавлен.");
+                            }
+                        } else if (Files.isRegularFile(path)) {
+                            // Если архивируем отдельный файл, то нужно получить его директорию и имя
+                            addNewZipEntry(zipOutputStream, path.getParent(), path.getFileName());
+                            ConsoleHelper.writeMessage("файл " + path.getFileName().toString() + " успешно добавлен.");
+                        }
+                    }
+                }
+
+            }
+        }
+        // Перемещаем временный файл на место оригинального
+        Files.move(tempZipFile, zipFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void addFile (Path absolutePath) throws Exception {
+        addFiles(Collections.singletonList(absolutePath));
+    }
+
+    private void isZipFileExist() throws WrongZipFileException {
         // Проверяем существует ли zip файл
         if (!Files.isRegularFile(zipFile)) {
             throw new WrongZipFileException();
         }
+    }
+
+    public List<FileProperties> getFilesList() throws Exception {
+        // Проверяем существует ли zip файл
+        isZipFileExist();
 
         List<FileProperties> files = new ArrayList<>();
 
