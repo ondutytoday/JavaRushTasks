@@ -80,6 +80,34 @@ public class ZipFileManager {
         return files;
     }
 
+    public void extractAll(Path outputFolder) throws Exception {
+        //проверяем есть ли зип файл
+        if (!Files.isRegularFile(zipFile)) {
+            throw new WrongZipFileException();
+        }
+        //проверяем на существование введенную дирректорию
+        if (Files.notExists(outputFolder))
+            Files.createDirectories(outputFolder);
+        // Создаем zip потоки
+        try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(zipFile))) {
+            //берем сущность архива
+            ZipEntry zipEntry = zipInputStream.getNextEntry();
+            while (zipEntry != null) {
+                //проверяем созданы ли папки до конкретного файла, если нет, то создаем
+                if (Files.notExists(outputFolder.resolve(zipEntry.getName()).getParent())) {
+                    Files.createDirectories(outputFolder.resolve(zipEntry.getName()).getParent());
+                }
+                //создаем уже сам путь файла
+                Path fullPath = outputFolder.resolve(zipEntry.getName());
+                try (OutputStream outputStream = Files.newOutputStream(fullPath)) {
+                    copyData(zipInputStream, outputStream);
+                }
+                zipEntry = zipInputStream.getNextEntry();
+            }
+
+        }
+    }
+
     private void addNewZipEntry(ZipOutputStream zipOutputStream, Path filePath, Path fileName) throws Exception {
         Path fullPath = filePath.resolve(fileName);
         try (InputStream inputStream = Files.newInputStream(fullPath)) {
