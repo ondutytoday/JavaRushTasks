@@ -9,7 +9,6 @@ public enum Dish {
     Juice,
     Water;
 
-
     public static String allDishesToString() {
         StringJoiner joiner = new StringJoiner(", ");
         for (Dish dish : Dish.values()) {
