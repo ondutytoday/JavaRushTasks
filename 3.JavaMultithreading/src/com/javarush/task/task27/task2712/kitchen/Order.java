@@ -14,7 +14,6 @@ public class Order {
     public Order(Tablet tablet) throws IOException {
         this.tablet = tablet;
         dishes = ConsoleHelper.getAllDishesForOrder();
-        System.out.println(this.toString());
     }
 
     @Override
@@ -22,7 +21,7 @@ public class Order {
         if (dishes.size() == 0) {
             return "";
         } else {
-            return "Your Order: " + dishes + " of " + tablet;
+            return "Your order: " + dishes + " of " + tablet;
         }
     }
 }
