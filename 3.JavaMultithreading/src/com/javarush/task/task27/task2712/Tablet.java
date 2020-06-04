@@ -22,8 +22,10 @@ public class Tablet extends Observable {
         try {
             newOrder = new Order(this);
             ConsoleHelper.writeMessage(newOrder.toString());
-            setChanged();
-            notifyObservers(newOrder);
+            if (!newOrder.isEmpty()) {
+                setChanged();
+                notifyObservers(newOrder);
+            }
             return newOrder;
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Console is unavailable.");
