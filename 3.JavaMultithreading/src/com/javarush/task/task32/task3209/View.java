@@ -117,6 +117,10 @@ public class View extends JFrame implements ActionListener {
         controller.exit();
     }
 
+    public boolean isHtmlTabSelected() {
+        return tabbedPane.getSelectedIndex() == tabbedPane.indexOfTab("HTML");
+    }
+
     public void selectedTabChanged() {
     }
 
