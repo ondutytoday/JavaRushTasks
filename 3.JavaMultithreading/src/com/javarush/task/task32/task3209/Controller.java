@@ -18,7 +18,7 @@ public class Controller {
     }
 
     public void init() {
-
+        createNewDocument();
     }
 
     public HTMLDocument getDocument() {
@@ -47,7 +47,7 @@ public class Controller {
     public String getPlainText() {
         StringWriter stringWriter = new StringWriter();
         try {
-            if (document == null) resetDocument();
+            //if (document == null) resetDocument();
             new HTMLEditorKit().write(stringWriter, document, 0, document.getLength());
         } catch (IOException e) {
             ExceptionHandler.log(e);
@@ -70,6 +70,11 @@ public class Controller {
     }
 
     public void createNewDocument() {
+        view.selectHtmlTab();
+        resetDocument();
+        view.setTitle("HTML редактор");
+        view.resetUndo();
+        currentFile = null;
     }
 
     public void openDocument() {
