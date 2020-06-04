@@ -47,6 +47,7 @@ public class Controller {
     public String getPlainText() {
         StringWriter stringWriter = new StringWriter();
         try {
+            if (document == null) resetDocument();
             new HTMLEditorKit().write(stringWriter, document, 0, document.getLength());
         } catch (IOException e) {
             ExceptionHandler.log(e);
@@ -66,5 +67,17 @@ public class Controller {
 
     public void exit() {
         System.exit(0);
+    }
+
+    public void createNewDocument() {
+    }
+
+    public void openDocument() {
+    }
+
+    public void saveDocument() {
+    }
+
+    public void saveDocumentAs() {
     }
 }
