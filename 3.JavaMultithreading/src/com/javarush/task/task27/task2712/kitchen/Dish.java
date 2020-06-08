@@ -9,6 +9,7 @@ public enum Dish {
     Juice (5),
     Water (3);
 
+    //длительность приготовления в минутах
     private int duration;
 
     Dish(int duration) {

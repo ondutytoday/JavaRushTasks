@@ -7,7 +7,7 @@ public class Advertisement {
     private String name;
     // начальная сумма, стоимость рекламы в копейках. Используем long, чтобы избежать проблем с округлением
     private long initialAmount;
-    //стоимость одного просмотра
+    //стоимость одного просмотра рекламного ролика в копейках
     private long amountPerOneDisplaying;
     //количество оплаченных показов
     private int hits;
@@ -20,7 +20,7 @@ public class Advertisement {
         this.initialAmount = initialAmount;
         this.hits = hits;
         this.duration = duration;
-        this.amountPerOneDisplaying = (long) (initialAmount/hits);
+        this.amountPerOneDisplaying = hits <= 0 ? 0 : (long) (initialAmount/hits);
     }
 
     public void revalidate() throws UnsupportedOperationException {
@@ -38,5 +38,16 @@ public class Advertisement {
 
     public int getDuration() {
         return duration;
+    }
+
+    public int getHits() {
+        return hits;
+    }
+
+    @Override
+    public String toString() {
+        return name + " is displaying... " +
+                amountPerOneDisplaying +
+                ", " + (amountPerOneDisplaying*1000/duration);
     }
 }

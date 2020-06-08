@@ -16,6 +16,7 @@ public class Order {
         dishes = ConsoleHelper.getAllDishesForOrder();
     }
 
+    //в минктах
     public int getTotalCookingTime() {
         int n = dishes.stream().mapToInt(Dish::getDuration).sum();
         return n;
