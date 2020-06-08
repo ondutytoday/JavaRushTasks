@@ -4,6 +4,7 @@ public class Advertisement {
     private Object content;
     private String name;
     private long initialAmount;
+    private long amountPerOneDisplaying;
     private int hits;
     private int duration;
 
@@ -13,5 +14,18 @@ public class Advertisement {
         this.initialAmount = initialAmount;
         this.hits = hits;
         this.duration = duration;
+        this.amountPerOneDisplaying = (long) (initialAmount/hits);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public long getAmountPerOneDisplaying() {
+        return amountPerOneDisplaying;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 }
