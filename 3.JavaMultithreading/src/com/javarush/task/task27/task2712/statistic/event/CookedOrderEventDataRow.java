@@ -2,7 +2,6 @@ package com.javarush.task.task27.task2712.statistic.event;
 
 import com.javarush.task.task27.task2712.kitchen.Dish;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -40,5 +39,7 @@ public class CookedOrderEventDataRow implements EventDataRow{
         return cookingTimeSeconds;
     }
 
-
+    public String getCookName() {
+        return cookName;
+    }
 }
