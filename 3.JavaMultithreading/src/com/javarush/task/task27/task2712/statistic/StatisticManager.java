@@ -17,6 +17,6 @@ public class StatisticManager {
     }
 
     public void register (EventDataRow data) {
-
+        
     }
 }
