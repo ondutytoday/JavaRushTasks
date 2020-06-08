@@ -16,10 +16,13 @@ public class Restaurant {
         Cook cookVanya = new Cook("Vanya");
         Waiter waiter = new Waiter();
         Tablet tablet = new Tablet(1);
+        DirectorTablet directorTablet = new DirectorTablet();
         tablet.addObserver(cookVanya);
         cookVanya.addObserver(waiter);
         tablet.createOrder();
-
-
+        directorTablet.printActiveVideoSet();
+        directorTablet.printAdvertisementProfit();
+        directorTablet.printArchivedVideoSet();
+        directorTablet.printCookWorkloading();
     }
 }
