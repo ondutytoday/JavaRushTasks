@@ -1,6 +1,10 @@
 package com.javarush.task.task27.task2712.ad;
 
 import com.javarush.task.task27.task2712.ConsoleHelper;
+import com.javarush.task.task27.task2712.statistic.StatisticManager;
+import com.javarush.task.task27.task2712.statistic.event.EventDataRow;
+import com.javarush.task.task27.task2712.statistic.event.NoAvailableVideoEventDataRow;
+import com.javarush.task.task27.task2712.statistic.event.VideoSelectedEventDataRow;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +13,7 @@ import java.util.List;
 
 public class AdvertisementManager {
     private final AdvertisementStorage storage = AdvertisementStorage.getInstance();
+    private final StatisticManager manager = StatisticManager.getInstance();
     private int timeSeconds;
 
 
@@ -23,7 +28,10 @@ public class AdvertisementManager {
                 list.add(adv);
             }
         }
-        if (list.isEmpty()) throw new NoVideoAvailableException();
+        if (list.isEmpty()) {
+            EventDataRow event = new NoAvailableVideoEventDataRow(timeSeconds);
+            throw new NoVideoAvailableException();
+        }
         list.sort(Comparator.comparingLong(Advertisement::getAmountPerOneDisplaying).thenComparing(Advertisement::getDuration));
         Collections.reverse(list);
         List<Advertisement> finalList = new ArrayList<>();
@@ -34,6 +42,10 @@ public class AdvertisementManager {
                 timeSeconds = timeSeconds - list.get(i).getDuration();
             }
         }
+        EventDataRow event = new VideoSelectedEventDataRow(finalList,
+                finalList.stream().mapToLong(Advertisement::getAmountPerOneDisplaying).sum(),
+                finalList.stream().mapToInt(Advertisement::getDuration).sum());
+        manager.register(event);
         finalList.forEach(o -> ConsoleHelper.writeMessage(o.toString()));
     }
 

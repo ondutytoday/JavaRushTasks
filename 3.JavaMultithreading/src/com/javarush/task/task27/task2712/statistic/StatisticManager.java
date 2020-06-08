@@ -24,16 +24,20 @@ public class StatisticManager {
     }
 
     public void register (EventDataRow data) {
-        
+        statisticStorage.put(data);
     }
 
     private class StatisticStorage {
         private Map<EventType, List<EventDataRow>> storage = new HashMap<>();
 
-        StatisticStorage() {
+        private StatisticStorage() {
             for (EventType e : EventType.values() ) {
                 storage.put(e, new ArrayList<>());
             }
+        }
+
+        private void put(EventDataRow data) {
+            storage.get(data.getType()).add(data);
         }
     }
 }
