@@ -26,9 +26,9 @@ public class Tablet extends Observable {
             ConsoleHelper.writeMessage(newOrder.toString());
             if (!newOrder.isEmpty()) {
                 AdvertisementManager manager = new AdvertisementManager(newOrder.getTotalCookingTime()*60);
-                manager.processVideos();
                 setChanged();
                 notifyObservers(newOrder);
+                manager.processVideos();
             }
             return newOrder;
         } catch (IOException e) {

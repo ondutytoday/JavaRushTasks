@@ -23,6 +23,6 @@ public class Restaurant {
         directorTablet.printActiveVideoSet();
         directorTablet.printAdvertisementProfit();
         directorTablet.printArchivedVideoSet();
-        directorTablet.printCookWorkloading();
+        //directorTablet.printCookWorkloading();
     }
 }
