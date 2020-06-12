@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestOrder extends Order{
+
     public TestOrder(Tablet tablet) throws IOException {
         super(tablet);
     }
@@ -19,5 +20,10 @@ public class TestOrder extends Order{
             dishesRandom.add(Dish.values()[(int) Math.random()*n]);
         }
         dishes = dishesRandom;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

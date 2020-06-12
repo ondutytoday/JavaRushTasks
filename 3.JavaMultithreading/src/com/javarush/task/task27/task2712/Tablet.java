@@ -39,10 +39,10 @@ public class Tablet extends Observable {
         }
     }
 
-    private void createAdvmanager(Order newOrder) {
-        AdvertisementManager manager = new AdvertisementManager(newOrder.getTotalCookingTime()*60);
+    private void createAdvmanager(Order order) {
+        AdvertisementManager manager = new AdvertisementManager(order.getTotalCookingTime()*60);
         setChanged();
-        notifyObservers(newOrder);
+        notifyObservers(order);
         manager.processVideos();
     }
 
