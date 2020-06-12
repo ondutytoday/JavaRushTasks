@@ -26,11 +26,12 @@ public class Restaurant {
         cookVanya.addObserver(waiter2);
         cookOlya.addObserver(waiter1);
         cookOlya.addObserver(waiter2);
+        OrderManager orderManager = new OrderManager();
         for (int i = 0; i < 5; i++) {
             Tablet tablet = new Tablet(i);
             list.add(tablet);
-            tablet.addObserver(cookOlya);
-            tablet.addObserver(cookVanya);
+            tablet.addObserver(orderManager);
+            tablet.addObserver(orderManager);
             tablet.createTestOrder();
         }
 
