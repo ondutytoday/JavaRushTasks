@@ -21,59 +21,59 @@ public class AdvertisementManager {
         this.timeSeconds = timeSeconds;
     }
 
-    public void processVideos() throws NoVideoAvailableException {
-        Collections.sort(storage.list(), new Comparator<Advertisement>() {
+    public void processVideos() {
+
+        List<Advertisement> advertisements = new ArrayList<>();
+        for (Advertisement ad : storage.list())
+        {
+            if (ad.getHits() > 0)
+            {
+                advertisements.add(ad);
+            }
+        }
+        if (advertisements.isEmpty()) throw new NoVideoAvailableException();
+
+        Collections.sort(advertisements, new Comparator<Advertisement>() {
             @Override
             public int compare(Advertisement o1, Advertisement o2) {
                 int result = Long.compare(o1.getAmountPerOneDisplaying(), o2.getAmountPerOneDisplaying());
-                if (result != 0)
+                if (result != 0) {
                     return -result;
+                }
 
-//                long oneSecondCost1 = o1.getAmountPerOneDisplaying() * 1000 / o1.getDuration();
-//                long oneSecondCost2 = o2.getAmountPerOneDisplaying() * 1000 / o2.getDuration();
-//                    result = Long.compare(oneSecondCost1, oneSecondCost2);
-//                    if (result != 0)
-//                        return result;
-                int duration1 = o1.getDuration();
-                int duration2 = o2.getDuration();
-                result = Integer.compare(duration1, duration2);
-                if (result != 0)
-                    return -result;
-                int countVideo1 = o1.getHits();
-                int countVideo2 = o2.getHits();
-                return Integer.compare(countVideo1, countVideo2);
+                long oneSecondCost1 = o1.getAmountPerOneDisplaying() * 1000 / o1.getDuration();
+                long oneSecondCost2 = o2.getAmountPerOneDisplaying() * 1000 / o2.getDuration();
+
+                return Long.compare(oneSecondCost1, oneSecondCost2);
             }
         });
 
-        int timeLeft = timeSeconds;
-        ArrayList<Advertisement> optimalVideoSet = new ArrayList<>();
-        long amount = 0;
         int totalDuration = 0;
-        for (Advertisement advertisement : storage.list()) {
-            if (timeLeft < advertisement.getDuration()) {
-                continue;
+        long totalAmount = 0;
+        List<Advertisement> adsForShow = new ArrayList<>();
+
+        for (Advertisement ad : advertisements) {
+            totalAmount += ad.getAmountPerOneDisplaying();
+            totalDuration += ad.getDuration();
+            if (totalDuration <= timeSeconds && ad.getDuration() <= timeSeconds) adsForShow.add(ad);
+            else {
+                totalAmount -= ad.getAmountPerOneDisplaying();
+                totalDuration -= ad.getDuration();
             }
-            if (advertisement.getHits() <= 0) {
-                continue;
-            }
-            timeLeft -= advertisement.getDuration();
-            advertisement.revalidate();
-            optimalVideoSet.add(advertisement);
-            amount += advertisement.getAmountPerOneDisplaying();
-            totalDuration += advertisement.getDuration();
         }
-        StatisticManager.getInstance().register(new VideoSelectedEventDataRow(
-                optimalVideoSet,
-                amount,
-                totalDuration));
-        for (Advertisement advertisement : optimalVideoSet) {
+
+        StatisticManager.getInstance().register(new VideoSelectedEventDataRow(adsForShow, totalAmount, totalDuration));
+
+        int timeLeft = timeSeconds;
+        for (Advertisement advertisement : adsForShow) {
+            if (timeLeft < advertisement.getDuration()) continue;
+
             ConsoleHelper.writeMessage(advertisement.getName() + " is displaying... "
                     + advertisement.getAmountPerOneDisplaying() + ", "
                     + advertisement.getAmountPerOneDisplaying() * 1000 / advertisement.getDuration());
-        }
 
-        if (timeLeft == timeSeconds) {
-            throw new NoVideoAvailableException();
+            timeLeft -= advertisement.getDuration();
+            advertisement.revalidate();
         }
     }
         /*List<Advertisement> list = new ArrayList<>();

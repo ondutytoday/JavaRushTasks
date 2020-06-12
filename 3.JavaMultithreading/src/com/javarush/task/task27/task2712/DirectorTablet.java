@@ -11,8 +11,18 @@ public class DirectorTablet {
     private StatisticManager manager = StatisticManager.getInstance();
 
     public void printAdvertisementProfit() {
-        Map<Date, Long> advProfit = manager.getAdvertisementProfit();
-/*
+        Map<String, Double> map = StatisticManager.getInstance().getAdvStatistic();
+        double totalAmount = 0;
+
+        for (Map.Entry<String, Double> entry : map.entrySet())
+        {
+            totalAmount += entry.getValue();
+            System.out.println(entry.getKey() + " - " + String.format("%.2f", entry.getValue()));
+        }
+        System.out.println(String.format("Total - %.2f", totalAmount));
+
+        /*Map<Date, Long> advProfit = manager.getAdvertisementProfit();
+*//*
         Date date = new Date();
         date.setTime(45671321354354L);
         advProfit.put(date, 45675L);
@@ -20,7 +30,7 @@ public class DirectorTablet {
         date1.setTime(35626451455L);
         advProfit.put(date1, 675L);
         advProfit.merge(date1, 100L,  (k, v) -> (k+v));
-*/
+*//*
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
         double amountTotal = 0;
         System.out.println(advProfit.keySet().toString());
@@ -33,9 +43,18 @@ public class DirectorTablet {
             }
         }
         String sss = String.format(Locale.ENGLISH,"%.2f", amountTotal);
-        ConsoleHelper.writeMessage("Total - " + sss);
+        ConsoleHelper.writeMessage("Total - " + sss);*/
     }
     public void printCookWorkloading() {
+
+        Map<String, Map<String, Integer>> map = manager.getCookStatistic();
+
+        for (Map.Entry<String, Map<String, Integer>> entry : map.entrySet()) {
+            System.out.println(entry.getKey());
+            for (Map.Entry<String, Integer> entry1 : entry.getValue().entrySet()) {
+                System.out.println(entry1.getKey() + " - " + entry1.getValue() + " min");
+            }
+        }
         /*Map<Date, Map<String, Integer>> cookWorkloading = manager.getCookWorkloading();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
         for (Map.Entry<Date, Map<String, Integer>> entry: cookWorkloading.entrySet()) {
