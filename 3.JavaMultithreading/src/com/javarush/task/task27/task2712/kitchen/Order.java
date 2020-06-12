@@ -13,7 +13,7 @@ public class Order {
 
     public Order(Tablet tablet) throws IOException {
         this.tablet = tablet;
-        dishes = ConsoleHelper.getAllDishesForOrder();
+        initDishes();
     }
 
     //в минктах
@@ -32,6 +32,10 @@ public class Order {
 
     public String getTabletName() {
         return tablet.toString();
+    }
+
+    protected void initDishes() throws IOException {
+        dishes = ConsoleHelper.getAllDishesForOrder();
     }
 
     @Override

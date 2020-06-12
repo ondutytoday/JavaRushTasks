@@ -3,7 +3,7 @@ package com.javarush.task.task27.task2712;
 import com.javarush.task.task27.task2712.ad.AdvertisementManager;
 import com.javarush.task.task27.task2712.ad.NoVideoAvailableException;
 import com.javarush.task.task27.task2712.kitchen.Order;
-
+import com.javarush.task.task27.task2712.kitchen.TestOrder;
 
 
 import java.io.IOException;
@@ -25,10 +25,7 @@ public class Tablet extends Observable {
             newOrder = new Order(this);
             ConsoleHelper.writeMessage(newOrder.toString());
             if (!newOrder.isEmpty()) {
-                AdvertisementManager manager = new AdvertisementManager(newOrder.getTotalCookingTime()*60);
-                setChanged();
-                notifyObservers(newOrder);
-                manager.processVideos();
+                createAdvmanager(newOrder);
             }
             return newOrder;
         } catch (IOException e) {
@@ -39,6 +36,30 @@ public class Tablet extends Observable {
             setChanged();
             notifyObservers(newOrder);
             return newOrder;
+        }
+    }
+
+    private void createAdvmanager(Order newOrder) {
+        AdvertisementManager manager = new AdvertisementManager(newOrder.getTotalCookingTime()*60);
+        setChanged();
+        notifyObservers(newOrder);
+        manager.processVideos();
+    }
+
+    public void createTestOrder() {
+        TestOrder testOrder = null;
+        try {
+            testOrder = new TestOrder(this);
+            ConsoleHelper.writeMessage(testOrder.toString());
+            if (!testOrder.isEmpty()) {
+                createAdvmanager(testOrder);
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Console is unavailable.");
+        } catch (NoVideoAvailableException nv) {
+            logger.log(Level.INFO, "No video is available for the order " + testOrder);
+            setChanged();
+            notifyObservers(testOrder);
         }
     }
 
