@@ -15,53 +15,46 @@ public class Tablet extends Observable {
     private final int number;
     private static Logger logger = Logger.getLogger(Tablet.class.getName());
 
+
     public Tablet(int number) {
         this.number = number;
     }
 
-    public Order createOrder() {
-        Order newOrder = null;
+    public void createOrder() {
         try {
-            newOrder = new Order(this);
-            ConsoleHelper.writeMessage(newOrder.toString());
-            if (!newOrder.isEmpty()) {
-                createAdvmanager(newOrder);
-            }
-            return newOrder;
-        } catch (IOException e) {
+            Order order = new Order(this);
+            printOrderAndShowAds(order);
+        }
+        catch (IOException e) {
             logger.log(Level.SEVERE, "Console is unavailable.");
-            return null;
-        } catch (NoVideoAvailableException nv) {
-            logger.log(Level.INFO, "No video is available for the order " + newOrder);
-            setChanged();
-            notifyObservers(newOrder);
-            return newOrder;
         }
     }
 
-    private void createAdvmanager(Order order) {
-        AdvertisementManager manager = new AdvertisementManager(order.getTotalCookingTime()*60);
-        setChanged();
-        notifyObservers(order);
-        manager.processVideos();
-    }
 
     public void createTestOrder() {
-        TestOrder testOrder = null;
         try {
-            testOrder = new TestOrder(this);
-            ConsoleHelper.writeMessage(testOrder.toString());
-            if (!testOrder.isEmpty()) {
-                createAdvmanager(testOrder);
-            }
-        } catch (IOException e) {
+            TestOrder order = new TestOrder(this);
+            printOrderAndShowAds(order);
+        }
+        catch (IOException e) {
             logger.log(Level.SEVERE, "Console is unavailable.");
-        } catch (NoVideoAvailableException nv) {
-            logger.log(Level.INFO, "No video is available for the order " + testOrder);
-            setChanged();
-            notifyObservers(testOrder);
         }
     }
+
+    private void printOrderAndShowAds(Order order) {
+        if (!order.isEmpty()) {
+            ConsoleHelper.writeMessage(order.toString());
+            AdvertisementManager advertisementManager = new AdvertisementManager(order.getTotalCookingTime()*60);
+            setChanged();
+            notifyObservers(order);
+            try {
+                advertisementManager.processVideos();
+            } catch (NoVideoAvailableException e) {
+                logger.log(Level.INFO, "No video is available for the order " + order.toString());
+            }
+        }
+    }
+
 
     @Override
     public String toString() {

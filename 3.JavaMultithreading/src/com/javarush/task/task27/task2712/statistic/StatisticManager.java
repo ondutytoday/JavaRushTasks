@@ -28,6 +28,10 @@ public class StatisticManager {
         return instance;
     }
 
+    public Set<Cook> getCooks() {
+        return cooks;
+    }
+
     public Map<String, Double> getAdvStatistic() {
         Map<String, Double> result = new TreeMap<>(Collections.reverseOrder());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);

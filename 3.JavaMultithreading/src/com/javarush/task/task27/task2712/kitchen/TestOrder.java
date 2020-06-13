@@ -14,12 +14,12 @@ public class TestOrder extends Order{
 
     @Override
     protected void initDishes() throws IOException {
-        List<Dish> dishesRandom = new ArrayList<>((int) Math.random()*5);
+        List<Dish> dishesRandom = new ArrayList<>( (int) (Math.random() * Dish.values().length) + 3);
         int n = Dish.values().length;
         for (int i = 0; i < dishesRandom.size(); i++) {
             dishesRandom.add(Dish.values()[(int) Math.random()*n]);
         }
-        dishes = dishesRandom;
+        super.dishes = dishesRandom;
     }
 
     @Override

@@ -14,35 +14,32 @@ public class Restaurant {
     private static  final int ORDER_CREATING_INTERVAL = 100;
 
     public static void main(String[] args) {
-
+        List<Tablet> list = new ArrayList<>();
         Cook cookVanya = new Cook("Vanya");
         Cook cookOlya = new Cook ("Olya");
-        StatisticManager.getInstance().register(cookVanya);
-        StatisticManager.getInstance().register(cookOlya);
+        StatisticManager manager = StatisticManager.getInstance();
+        manager.register(cookVanya);
+        manager.register(cookOlya);
         Waiter waiter1 = new Waiter();
-        Waiter waiter2 = new Waiter();
-        List<Tablet> list = new ArrayList<>();
         cookVanya.addObserver(waiter1);
-        cookVanya.addObserver(waiter2);
         cookOlya.addObserver(waiter1);
-        cookOlya.addObserver(waiter2);
         OrderManager orderManager = new OrderManager();
         for (int i = 0; i < 5; i++) {
             Tablet tablet = new Tablet(i);
             list.add(tablet);
             tablet.addObserver(orderManager);
             tablet.addObserver(orderManager);
-            tablet.createTestOrder();
+
         }
 
         Thread thread = new Thread(new RandomOrderGeneratorTask(list, ORDER_CREATING_INTERVAL));
         thread.start();
 
-/*        DirectorTablet directorTablet = new DirectorTablet();
+        DirectorTablet directorTablet = new DirectorTablet();
         directorTablet.printActiveVideoSet();
         directorTablet.printAdvertisementProfit();
         directorTablet.printArchivedVideoSet();
-        directorTablet.printCookWorkloading();*/
+        directorTablet.printCookWorkloading();
     }
 
 }
