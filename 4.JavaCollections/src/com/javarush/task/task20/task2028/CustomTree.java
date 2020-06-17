@@ -1,34 +1,58 @@
 package com.javarush.task.task20.task2028;
 
 import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /*
 Построй дерево(1)
 */
 public class CustomTree extends AbstractList<String> implements Cloneable, Serializable {
+    Entry<String> root;
+    private List<Entry<String>> nods = new LinkedList<>();
 
-    static class Entry<T> implements Serializable{
-        String elementName;
-        boolean availableToAddLeftChildren;
-        boolean availableToAddRightChildren;
-        Entry <T> parent, leftChild, rightChild;
-
-        public Entry(String elementName) {
-            this.elementName = elementName;
-            availableToAddLeftChildren = true;
-            availableToAddRightChildren = true;
-        }
-
-        public boolean isAvailableToAddChildren() {
-            return availableToAddLeftChildren | availableToAddRightChildren;
-        }
+    public CustomTree() {
+        this.root = new Entry<>("0");
+        nods.add(root);
     }
+
+    @Override
+    public boolean add(String elementName) {
+        Entry<String> element = new Entry<>(elementName);
+        for (Entry<String> entry : nods) {
+            if (entry.isAvailableToAddChildren()) {
+                if (entry.availableToAddLeftChildren == true) {
+                    nods.add(element);
+                    element.parent = entry;
+                    entry.leftChild = element;
+                    entry.availableToAddLeftChildren = false;
+                    break;
+                } else {
+                    nods.add(element);
+                    element.parent = entry;
+                    entry.rightChild = element;
+                    entry.availableToAddRightChildren = false;
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+    public String getParent(String s) {
+        String parentName = null;
+        for (Entry<String> entry : nods) {
+            if (entry.elementName.equals(s)) {
+                parentName =  entry.parent.elementName;
+                break;
+            }
+        }
+        return parentName;
+    }
+
+
     @Override
     public int size() {
-        return 0;
+        return nods.size()-1;
     }
 
     @Override
@@ -64,5 +88,23 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
     @Override
     protected void removeRange(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();
+    }
+
+    static class Entry<T> implements Serializable {
+        String elementName;
+        boolean availableToAddLeftChildren;
+        boolean availableToAddRightChildren;
+        Entry<T> parent, leftChild, rightChild;
+
+        public Entry(String elementName) {
+            this.elementName = elementName;
+            availableToAddLeftChildren = true;
+            availableToAddRightChildren = true;
+        }
+
+        public boolean isAvailableToAddChildren() {
+            return availableToAddLeftChildren | availableToAddRightChildren;
+        }
+
     }
 }
