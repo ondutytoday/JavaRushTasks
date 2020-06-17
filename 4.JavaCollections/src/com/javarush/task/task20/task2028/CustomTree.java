@@ -8,26 +8,28 @@ import java.util.*;
 */
 public class CustomTree extends AbstractList<String> implements Cloneable, Serializable {
     Entry<String> root;
-    private List<Entry<String>> nods = new LinkedList<>();
+    private List<Entry<String>> nodes = new LinkedList<>();
 
     public CustomTree() {
         this.root = new Entry<>("0");
-        nods.add(root);
+        nodes.add(root);
     }
 
     @Override
     public boolean add(String elementName) {
         Entry<String> element = new Entry<>(elementName);
-        for (Entry<String> entry : nods) {
+        boolean needToEdit = true;
+        for (Entry<String> entry : nodes) {
             if (entry.isAvailableToAddChildren()) {
+                needToEdit = false;
                 if (entry.availableToAddLeftChildren == true) {
-                    nods.add(element);
+                    nodes.add(element);
                     element.parent = entry;
                     entry.leftChild = element;
                     entry.availableToAddLeftChildren = false;
                     break;
                 } else {
-                    nods.add(element);
+                    nodes.add(element);
                     element.parent = entry;
                     entry.rightChild = element;
                     entry.availableToAddRightChildren = false;
@@ -35,12 +37,19 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
                 }
             }
         }
+        if (needToEdit) {
+            Entry<String> nodeToEdit = nodes.get((size()-1)/2+1);
+            nodeToEdit.availableToAddRightChildren = true;
+            nodes.add(element);
+            element.parent = nodeToEdit;
+            nodeToEdit.leftChild = element;
+        }
         return true;
     }
 
     public String getParent(String s) {
         String parentName = null;
-        for (Entry<String> entry : nods) {
+        for (Entry<String> entry : nodes) {
             if (entry.elementName.equals(s)) {
                 parentName =  entry.parent.elementName;
                 break;
@@ -49,10 +58,45 @@ public class CustomTree extends AbstractList<String> implements Cloneable, Seria
         return parentName;
     }
 
+    public Entry<String> getNodeByName(String s) {
+        Entry<String> firstNodeWithName = null;
+        for (Entry<String> entry : nodes) {
+            if (entry.elementName.equals(s)) {
+                firstNodeWithName =  entry;
+                break;
+            }
+        }
+        return firstNodeWithName;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        if (!(o instanceof String)) throw new UnsupportedOperationException();
+        Queue <Entry<String>> queueToRemove = new LinkedList<>();
+        List <String> names = new LinkedList<>();
+        String elementName = (String) o;
+        queueToRemove.add(getNodeByName(elementName));
+        while (!queueToRemove.isEmpty()) {
+            Entry<String> entry = queueToRemove.poll();
+            names.add(entry.elementName);
+            if (entry.leftChild != null) queueToRemove.add(entry.leftChild);
+            if (entry.rightChild != null) queueToRemove.add(entry.rightChild);
+        }
+        for (String s : names) {
+            for (int i = 0; i < nodes.size(); i++) {
+                Entry<String> en = nodes.get(i);
+                if (s.equals(en.elementName)) {
+                    nodes.remove(en);
+                    break;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public int size() {
-        return nods.size()-1;
+        return nodes.size()-1;
     }
 
     @Override
