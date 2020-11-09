@@ -16,6 +16,7 @@ public class SearchFileVisitor extends SimpleFileVisitor<Path> {
     private int maxSize = Integer.MAX_VALUE;
     private List<Path> foundFiles = new ArrayList<>();
 
+    
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         boolean containsPartOfName = true;
